@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Members Only | <%= formType === "register" ? "Register" : "Login" %>
+    </title>
+    <link rel="stylesheet" href="/styles/index.css" />
+  </head>
+  <body>
+    <%- include("partials/header.ejs") %>
+
+    <main class="main-content">
+      <h2><%= formType === "register" ? "Register" : "Login" %></h2>
+
+      <form action="" method="POST" class="<%= formType %>-form">
+        <% if (formType === "register") { %>
+        <label for="first-name">First Name</label>
+        <input
+          type="text"
+          name="firstName"
+          id="first-name"
+          class="first-name"
+          placeholder="Enter your first name"
+        />
+
+        <label for="last-name">Last Name</label>
+        <input
+          type="text"
+          name="lastName"
+          id="last-name"
+          class="last-name"
+          placeholder="Enter your last name"
+        />
+
+        <label for="username">Username</label>
+        <input
+          type="text"
+          name="username"
+          id="username"
+          class="username"
+          placeholder="Enter your username"
+        />
+        <% } %>
+
+        <label for="email">Email</label>
+        <input
+          type="email"
+          name="email"
+          id="email"
+          class="email"
+          placeholder="Enter your email"
+        />
+
+        <label for="password">Password</label>
+        <input
+          type="password"
+          name="password"
+          id="password"
+          class="password"
+          placeholder="Enter your password"
+        />
+
+        <% if (formType === "register") { %>
+        <label for="confirm-password">Confirm Password</label>
+        <input
+          type="password"
+          name="confirmPassword"
+          id="confirm-password"
+          class="confirm-password"
+          placeholder="Enter your password again"
+        />
+        <% } %>
+
+        <button type="submit" class="btn-<%= formType %>">
+          <%= formType === "register" ? "Register" : "Login" %>
+        </button>
+      </form>
+    </main>
+  </body>
+</html>

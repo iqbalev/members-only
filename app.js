@@ -14,7 +14,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", (req, res) => res.render("index", { heading: "Index" }));
+app.get("/login", (req, res) => res.render("auth", { formType: "login" }));
+app.get("/register", (req, res) =>
+  res.render("auth", { formType: "register" })
+);
+app.get("/", (req, res) => res.render("index", { title: "Welcome!" }));
 
 const PORT = 8080;
 const server = app.listen(PORT, () =>
