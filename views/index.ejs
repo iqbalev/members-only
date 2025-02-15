@@ -11,6 +11,13 @@
 
     <main class="main-content">
       <h2><%= title %></h2>
+
+      <% if (locals.user) { %>
+      <h3>Hello, <%= user.username %>!</h3>
+      <form action="/logout" method="POST">
+        <button type="submit">Logout</button>
+      </form>
+      <% } %>
     </main>
   </body>
 </html>

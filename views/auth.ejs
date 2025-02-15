@@ -14,7 +14,7 @@
     <main class="main-content">
       <h2><%= formType === "register" ? "Register" : "Login" %></h2>
 
-      <form action="" method="POST" class="<%= formType %>-form">
+      <form action="/<%= formType === "register" ? "register" : "login" %>" method="POST" class="<%= formType %>-form">
         <% if (formType === "register") { %>
         <label for="first-name">First Name</label>
         <input
