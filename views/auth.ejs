@@ -15,6 +15,8 @@
       <h2><%= formType === "register" ? "Register" : "Login" %></h2>
 
       <form action="/<%= formType === "register" ? "register" : "login" %>" method="POST" class="<%= formType %>-form">
+        <%- include("partials/formErrors.ejs", { errors }) %>
+
         <% if (formType === "register") { %>
         <label for="first-name">First Name</label>
         <input

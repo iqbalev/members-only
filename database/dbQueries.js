@@ -1,5 +1,15 @@
 import dbPool from "./dbPool.js";
 
+export async function getUserUsername() {
+  const { rows } = await dbPool.query("SELECT username FROM users");
+  return rows;
+}
+
+export async function getUserEmail() {
+  const { rows } = await dbPool.query("SELECT email FROM users");
+  return rows;
+}
+
 export async function getUserByEmail(email) {
   const { rows } = await dbPool.query("SELECT * FROM users WHERE email = $1", [
     email,

@@ -11,7 +11,7 @@ const createTable = `
         id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         first_name VARCHAR(50) NOT NULL,
         last_name VARCHAR(50) NOT NULL,
-        username VARCHAR(50) UNIQUE NOT NULL,
+        username VARCHAR(26) UNIQUE NOT NULL,
         email VARCHAR(320) UNIQUE NOT NULL,
         password TEXT NOT NULL,
         created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
