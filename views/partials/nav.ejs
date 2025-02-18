@@ -1,6 +1,15 @@
 <nav class="navbar">
-  <ul class="nav-links">
-    <li><a href="/login">Login</a></li>
-    <li><a href="/register">Register</a></li>
+  <ul class="nav-lists">
+    <% if (locals.user) { %>
+    <li><%= user.username %></li>
+    <li>
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn-logout">Logout</button>
+      </form>
+    </li>
+    <% } else { %>
+    <li><a href="/login" class="btn-login">Login</a></li>
+    <li><a href="/register" class="btn-register">Register</a></li>
+    <% } %>
   </ul>
 </nav>

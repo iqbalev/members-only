@@ -7,14 +7,11 @@
     <link rel="stylesheet" href="/styles/index.css" />
   </head>
   <body>
-    <%- include("../views/partials/header.ejs") %>
+    <%- include("../views/partials/header.ejs", { currentPage }) %>
 
     <main class="feed-content">
       <% if (locals.user) { %>
       <h3>Hello, <%= user.username %>!</h3>
-      <form action="/logout" method="POST">
-        <button type="submit" class="btn-logout">Logout</button>
-      </form>
       <% } %>
     </main>
   </body>

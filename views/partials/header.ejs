@@ -1,4 +1,5 @@
 <header class="header">
   <h1 class="site-title">Members Only</h1>
-  <%- include("nav.ejs") %>
+  <% if (currentPage !== "register" && currentPage !== "login") { %> <%-
+  include("nav.ejs") %> <% } %>
 </header>
