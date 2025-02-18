@@ -5,7 +5,7 @@ import { createUser } from "../database/dbQueries.js";
 
 // Register Controllers
 export const registerGet = (req, res) => {
-  res.render("auth", { errors: [], formType: "register" });
+  res.render("auth", { errors: [], currentPage: "register" });
 };
 
 export const registerPost = async (req, res, next) => {
@@ -14,7 +14,7 @@ export const registerPost = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res
         .status(400)
-        .render("auth", { errors: errors.array(), formType: "register" });
+        .render("auth", { errors: errors.array(), currentPage: "register" });
     }
 
     const { firstName, lastName, username, email, password } = req.body;
@@ -29,7 +29,7 @@ export const registerPost = async (req, res, next) => {
 
 // Login Controllers
 export const loginGet = (req, res) => {
-  res.render("auth", { errors: [], formType: "login" });
+  res.render("auth", { errors: [], currentPage: "login" });
 };
 
 export const loginPost = async (req, res, next) => {
@@ -37,7 +37,7 @@ export const loginPost = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return res
       .status(400)
-      .render("auth", { errors: errors.array(), formType: "login" });
+      .render("auth", { errors: errors.array(), currentPage: "login" });
   }
 
   passport.authenticate("local", (err, user, info) => {
@@ -48,7 +48,7 @@ export const loginPost = async (req, res, next) => {
     if (!user) {
       return res.render("auth", {
         errors: [{ msg: info.message }],
-        formType: "login",
+        currentPage: "login",
       });
     }
 

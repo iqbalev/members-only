@@ -4,20 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      Members Only | <%= formType === "register" ? "Register" : "Login" %>
+      Members Only | <%= currentPage === "register" ? "Register" : "Login" %>
     </title>
     <link rel="stylesheet" href="/styles/index.css" />
   </head>
   <body>
     <%- include("partials/header.ejs") %>
 
-    <main class="main-content">
-      <h2><%= formType === "register" ? "Register" : "Login" %></h2>
+    <main class="auth-content">
+      <h2><%= currentPage === "register" ? "Register" : "Login" %></h2>
 
-      <form action="/<%= formType === "register" ? "register" : "login" %>" method="POST" class="<%= formType %>-form">
+      <form action="/<%= currentPage === "register" ? "register" : "login" %>" method="POST" class="<%= currentPage %>-form">
         <%- include("partials/formErrors.ejs", { errors }) %>
 
-        <% if (formType === "register") { %>
+        <% if (currentPage === "register") { %>
         <label for="first-name">First Name</label>
         <input
           type="text"
@@ -64,7 +64,7 @@
           placeholder="Enter your password"
         />
 
-        <% if (formType === "register") { %>
+        <% if (currentPage === "register") { %>
         <label for="confirm-password">Confirm Password</label>
         <input
           type="password"
@@ -75,8 +75,8 @@
         />
         <% } %>
 
-        <button type="submit" class="btn-<%= formType %>">
-          <%= formType === "register" ? "Register" : "Login" %>
+        <button type="submit" class="btn-<%= currentPage %>">
+          <%= currentPage === "register" ? "Register" : "Login" %>
         </button>
       </form>
     </main>
