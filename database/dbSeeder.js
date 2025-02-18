@@ -14,6 +14,7 @@ const createTable = `
         username VARCHAR(26) UNIQUE NOT NULL,
         email VARCHAR(320) UNIQUE NOT NULL,
         password TEXT NOT NULL,
+        membership_status VARCHAR(20) CHECK (membership_status IN ('basic', 'premium', 'admin')) DEFAULT 'basic',
         created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     );`;
 
