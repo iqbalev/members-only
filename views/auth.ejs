@@ -79,6 +79,16 @@
           <%= currentPage === "register" ? "Register" : "Login" %>
         </button>
       </form>
+
+      <section class="authentication-links">
+        <% if (currentPage === "register") { %>
+            <span>Already have an account?</span>
+            <a href="/login">Login</a>
+        <% } else if (currentPage === "login") { %>
+            <span>Don't have an account?</span>
+            <a href="/register">Register</a>
+        <% } %>
+      </section>
     </main>
   </body>
 </html>
