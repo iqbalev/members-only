@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import express from "express";
 import session from "express-session";
 import passport from "./config/passportConfig.js";
+import feedRouter from "./routes/feedRouter.js";
 import authRouter from "./routes/authRouter.js";
 import indexRouter from "./routes/indexRouter.js";
 
@@ -29,6 +30,7 @@ app.use(
 );
 app.use(passport.session());
 
+app.use("/feed", feedRouter);
 app.use("/", authRouter);
 app.use("/", indexRouter);
 

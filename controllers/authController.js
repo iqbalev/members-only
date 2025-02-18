@@ -57,7 +57,7 @@ export const loginPost = async (req, res, next) => {
         return next(err);
       }
 
-      return res.redirect("/");
+      return res.redirect("/feed");
     });
   })(req, res, next);
 };

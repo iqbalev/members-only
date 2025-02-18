@@ -3,14 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Members Only</title>
+    <title>Members Only | Feed</title>
     <link rel="stylesheet" href="/styles/index.css" />
   </head>
   <body>
     <%- include("../views/partials/header.ejs") %>
 
-    <main class="root-content">
-      <h2><%= title %></h2>
+    <main class="feed-content">
+      <% if (locals.user) { %>
+      <h3>Hello, <%= user.username %>!</h3>
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn-logout">Logout</button>
+      </form>
+      <% } %>
     </main>
   </body>
 </html>
