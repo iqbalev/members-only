@@ -24,6 +24,7 @@
           name="firstName"
           id="first-name"
           class="first-name"
+          value="<%= previousValue.firstName || '' %>"
           placeholder="Enter your first name"
         />
 
@@ -33,6 +34,7 @@
           name="lastName"
           id="last-name"
           class="last-name"
+          value="<%= previousValue.lastName || '' %>"
           placeholder="Enter your last name"
         />
 
@@ -42,27 +44,30 @@
           name="username"
           id="username"
           class="username"
+          value="<%= previousValue.username || '' %>"
           placeholder="Enter your username"
         />
         
         <label for="email">Email</label>
         <input
-        type="email"
-        name="email"
-        id="email"
-        class="email"
-        placeholder="Enter your email"
+          type="email"
+          name="email"
+          id="email"
+          class="email"
+          value="<%= previousValue.email || '' %>"
+          placeholder="Enter your email"
         />
         <% } %>
 
         <% if (currentPage === "login") { %>
           <label for="identifier">Email or Username</label>
           <input
-          type="text"
-          name="identifier"
-          id="identifier"
-          class="identifier"
-          placeholder="Enter your email or username"
+            type="text"
+            name="identifier"
+            id="identifier"
+            class="identifier"
+            value="<%= previousValue.identifier || '' %>"
+            placeholder="Enter your email or username"
           />
         <% } %>
 

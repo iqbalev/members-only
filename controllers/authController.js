@@ -5,16 +5,22 @@ import { createUser } from "../database/dbQueries.js";
 
 // Register Controllers
 export const registerGet = (req, res) => {
-  res.render("auth", { errors: [], currentPage: "register" });
+  res.render("auth", {
+    errors: [],
+    currentPage: "register",
+    previousValue: {},
+  });
 };
 
 export const registerPost = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .render("auth", { errors: errors.array(), currentPage: "register" });
+      return res.status(400).render("auth", {
+        errors: errors.array(),
+        currentPage: "register",
+        previousValue: req.body || {},
+      });
     }
 
     const { firstName, lastName, username, email, password } = req.body;
@@ -29,15 +35,17 @@ export const registerPost = async (req, res, next) => {
 
 // Login Controllers
 export const loginGet = (req, res) => {
-  res.render("auth", { errors: [], currentPage: "login" });
+  res.render("auth", { errors: [], currentPage: "login", previousValue: {} });
 };
 
 export const loginPost = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res
-      .status(400)
-      .render("auth", { errors: errors.array(), currentPage: "login" });
+    return res.status(400).render("auth", {
+      errors: errors.array(),
+      currentPage: "login",
+      previousValue: req.body || {},
+    });
   }
 
   passport.authenticate("local", (err, user, info) => {
@@ -49,6 +57,7 @@ export const loginPost = async (req, res, next) => {
       return res.render("auth", {
         errors: [{ msg: info.message }],
         currentPage: "login",
+        previousValue: req.body || {},
       });
     }
 
