@@ -1,17 +1,17 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcryptjs from "bcryptjs";
-import { getUserByEmail, getUserById } from "../database/dbQueries.js";
+import { getUserById, getUserByIdentifier } from "../database/dbQueries.js";
 
 passport.use(
   new LocalStrategy(
-    { usernameField: "email" },
-    async (email, password, done) => {
+    { usernameField: "identifier" },
+    async (identifier, password, done) => {
       try {
-        const user = await getUserByEmail(email);
+        const user = await getUserByIdentifier(identifier);
         if (!user) {
           return done(null, false, {
-            message: "No account found with that email.",
+            message: "No account found with that email or username.",
           });
         }
 

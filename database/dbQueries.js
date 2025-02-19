@@ -10,18 +10,19 @@ export async function getUserEmail() {
   return rows;
 }
 
-export async function getUserByEmail(email) {
-  const { rows } = await dbPool.query("SELECT * FROM users WHERE email = $1", [
-    email,
+export async function getUserById(id) {
+  const { rows } = await dbPool.query("SELECT * FROM users WHERE id = $1", [
+    id,
   ]);
 
   return rows[0];
 }
 
-export async function getUserById(id) {
-  const { rows } = await dbPool.query("SELECT * FROM users WHERE id = $1", [
-    id,
-  ]);
+export async function getUserByIdentifier(identifier) {
+  const { rows } = await dbPool.query(
+    "SELECT * FROM users WHERE email = $1 OR username = $1 LIMIT 1",
+    [identifier]
+  );
 
   return rows[0];
 }

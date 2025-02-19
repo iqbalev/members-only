@@ -60,6 +60,9 @@ export const registerValidator = [
 ];
 
 export const loginValidator = [
-  body("email").trim().notEmpty().withMessage("Email is required."),
+  body("identifier")
+    .trim()
+    .notEmpty()
+    .withMessage("Email or username is required."),
   body("password").trim().notEmpty().withMessage("Password is required."),
 ];
