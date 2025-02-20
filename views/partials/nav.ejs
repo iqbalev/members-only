@@ -1,6 +1,6 @@
 <nav class="navbar">
   <ul class="nav-lists">
-    <% if (locals.user) { %>
+    <% if (user) { %>
     <li><%= user.username %></li>
     <li>
       <form action="/logout" method="POST">

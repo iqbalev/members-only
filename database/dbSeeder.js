@@ -5,18 +5,28 @@ dotenv.config();
 
 const { Client } = pkg;
 
-const dropTable = "DROP TABLE IF EXISTS users";
-const createTable = `
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-        first_name VARCHAR(50) NOT NULL,
-        last_name VARCHAR(50) NOT NULL,
-        username VARCHAR(26) UNIQUE NOT NULL,
-        email VARCHAR(320) UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        membership_status VARCHAR(20) CHECK (membership_status IN ('basic', 'premium', 'admin')) DEFAULT 'basic',
-        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-    );`;
+const dropMessagesTable = "DROP TABLE IF EXISTS messages";
+const dropUsersTable = "DROP TABLE IF EXISTS users";
+
+const createUsersTable = `
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    username VARCHAR(26) UNIQUE NOT NULL,
+    email VARCHAR(320) UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    membership VARCHAR(20) CHECK (membership IN ('basic', 'premium', 'admin')) DEFAULT 'basic',
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  );`;
+
+const createMessagesTable = `
+  CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  );`;
 
 async function seedDb() {
   console.log("Starting database seeding...");
@@ -33,11 +43,15 @@ async function seedDb() {
     await client.connect();
     console.log("Connected to database.");
 
-    await client.query(dropTable);
-    console.log("Dropped existing table.");
+    await client.query(dropMessagesTable);
+    console.log("Dropped existing 'messages' table.");
+    await client.query(dropUsersTable);
+    console.log("Dropped existing 'users' table.");
 
-    await client.query(createTable);
-    console.log("Created a new table.");
+    await client.query(createUsersTable);
+    console.log("Created new 'users' table.");
+    await client.query(createMessagesTable);
+    console.log("Created new 'messages' table.");
 
     console.log("Seeding completed!");
   } catch (error) {

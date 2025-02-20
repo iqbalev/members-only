@@ -1,5 +1,18 @@
 import dbPool from "./dbPool.js";
 
+export async function createUser(
+  firstName,
+  lastName,
+  username,
+  email,
+  password
+) {
+  await dbPool.query(
+    "INSERT INTO users (first_name, last_name, username, email, password) VALUES ($1, $2, $3, $4, $5)",
+    [firstName, lastName, username, email, password]
+  );
+}
+
 export async function getUserUsername() {
   const { rows } = await dbPool.query("SELECT username FROM users");
   return rows;
@@ -27,15 +40,20 @@ export async function getUserByIdentifier(identifier) {
   return rows[0];
 }
 
-export async function createUser(
-  firstName,
-  lastName,
-  username,
-  email,
-  password
-) {
+export async function createMessage(userId, message) {
   await dbPool.query(
-    "INSERT INTO users (first_name, last_name, username, email, password) VALUES ($1, $2, $3, $4, $5)",
-    [firstName, lastName, username, email, password]
+    "INSERT INTO messages (user_id, message) VALUES ($1, $2)",
+    [userId, message]
   );
+}
+
+export async function getMessages() {
+  const { rows } = await dbPool.query(`
+    SELECT users.username, messages.message, messages.created_at
+    FROM messages
+    JOIN users ON messages.user_id = users.id
+    ORDER BY messages.created_at DESC
+  `);
+
+  return rows;
 }

@@ -10,9 +10,77 @@
     <%- include("../views/partials/header.ejs", { currentPage }) %>
 
     <main class="feed-content">
-      <% if (locals.user) { %>
-      <h3>Hello, <%= user.username %>!</h3>
-      <% } %>
+      <% if (user) { %>
+      <h3>Welcome, <%= user.username %>!</h3>
+
+      <% if (user.membership === "basic") { %>
+      <p>
+        You have a <%= user.membership %> membership. Upgrade to premium to
+        access other features!
+      </p>
+      <% } %> <% } %>
+
+      <section class="form-container">
+        <% if (user) { %>
+        <button type="button" class="btn-add-message">Add Message</button>
+        <form action="/feed" method="POST" class="add-message-form">
+          <textarea
+            name="newMessage"
+            id="new-message"
+            class="new-message"
+            placeholder="Insert messages here..."
+          ></textarea>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-submit">Submit</button>
+            <button type="button" class="btn-cancel">Cancel</button>
+          </div>
+        </form>
+        <% } %>
+      </section>
+
+      <section class="messages-container">
+        <% messages.forEach(({username, created_at, message}) => { %>
+        <article class="message-card">
+          <div class="message-header">
+            <p class="message-username"><%= username %></p>
+          </div>
+
+          <div class="message-body">
+            <p class="message-date"><%= created_at %></p>
+            <p class="message-content"><%= message %></p>
+          </div>
+        </article>
+        <% }) %>
+      </section>
     </main>
+
+    <script>
+      function toggleAddMessageForm() {
+        const messageForm = document.querySelector(".add-message-form");
+        if (!messageForm.classList.contains("display")) {
+          messageForm.classList.add("display");
+          messageForm.style.display = "flex";
+        } else {
+          messageForm.classList.remove("display");
+          messageForm.style.display = "none";
+        }
+      }
+
+      function closeAddMessageForm() {
+        const messageForm = document.querySelector(".add-message-form");
+        messageForm.classList.remove("display");
+        messageForm.style.display = "none";
+      }
+
+      const addMessageButton = document.querySelector(".btn-add-message");
+      addMessageButton.addEventListener("click", toggleAddMessageForm);
+
+      const submitButton = document.querySelector(".btn-submit");
+      submitButton.addEventListener("submit", () => closeAddMessageForm);
+
+      const cancelButton = document.querySelector(".btn-cancel");
+      cancelButton.addEventListener("click", closeAddMessageForm);
+    </script>
   </body>
 </html>
