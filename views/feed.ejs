@@ -43,14 +43,14 @@
       </section>
 
       <section class="messages-container">
-        <% messages.forEach(({username, created_at, message}) => { %>
+        <% messages.forEach(({username, createdAt, message}) => { %>
         <article class="message-card">
           <div class="message-header">
             <p class="message-username"><%= username %></p>
           </div>
 
           <div class="message-body">
-            <p class="message-date"><%= created_at %></p>
+            <p class="message-date"><%= createdAt %></p>
             <p class="message-content"><%= message %></p>
           </div>
         </article>
