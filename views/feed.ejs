@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/styles/index.css" />
   </head>
   <body>
-    <%- include("../views/partials/header.ejs", { currentPage }) %>
+    <%- include("./partials/header.ejs", { currentPage }) %>
 
     <main class="feed-content">
       <% if (user) { %>
@@ -23,12 +23,15 @@
       <section class="form-container">
         <% if (user) { %>
         <button type="button" class="btn-add-message">Add Message</button>
-        <form action="/feed" method="POST" class="add-message-form">
+        <form action="/feed" method="POST" class="add-message-form <%= errors.length > 0 ? "display" : "" %>">
+          <label for="new-message">Add New Message</label>
+          <%- include("./partials/formErrors.ejs", { errors }) %>
           <textarea
             name="newMessage"
             id="new-message"
             class="new-message"
             placeholder="Insert messages here..."
+            required
           ></textarea>
 
           <div class="form-actions">
@@ -56,30 +59,31 @@
     </main>
 
     <script>
+      const addMessageButton = document.querySelector(".btn-add-message");
+      const addMessageForm = document.querySelector(".add-message-form");
+      const cancelButton = document.querySelector(".btn-cancel");
+
       function toggleAddMessageForm() {
-        const messageForm = document.querySelector(".add-message-form");
-        if (!messageForm.classList.contains("display")) {
-          messageForm.classList.add("display");
-          messageForm.style.display = "flex";
+        if (!addMessageForm.classList.contains("display")) {
+          addMessageForm.classList.add("display");
+          addMessageForm.style.display = "flex";
         } else {
-          messageForm.classList.remove("display");
-          messageForm.style.display = "none";
+          addMessageForm.classList.remove("display");
+          addMessageForm.style.display = "none";
         }
       }
 
       function closeAddMessageForm() {
-        const messageForm = document.querySelector(".add-message-form");
-        messageForm.classList.remove("display");
-        messageForm.style.display = "none";
+        addMessageForm.classList.remove("display");
+        addMessageForm.style.display = "none";
       }
 
-      const addMessageButton = document.querySelector(".btn-add-message");
+
+      if (addMessageForm.classList.contains("display")) {
+        addMessageForm.style.display = "flex";
+      }
+
       addMessageButton.addEventListener("click", toggleAddMessageForm);
-
-      const submitButton = document.querySelector(".btn-submit");
-      submitButton.addEventListener("submit", () => closeAddMessageForm);
-
-      const cancelButton = document.querySelector(".btn-cancel");
       cancelButton.addEventListener("click", closeAddMessageForm);
     </script>
   </body>

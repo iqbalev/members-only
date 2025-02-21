@@ -26,6 +26,7 @@
           class="first-name"
           value="<%= previousValue.firstName || '' %>"
           placeholder="Enter your first name"
+          required
         />
 
         <label for="last-name">Last Name</label>
@@ -36,6 +37,7 @@
           class="last-name"
           value="<%= previousValue.lastName || '' %>"
           placeholder="Enter your last name"
+          required
         />
 
         <label for="username">Username</label>
@@ -44,8 +46,11 @@
           name="username"
           id="username"
           class="username"
+          minlength="3"
+          maxlength="26"
           value="<%= previousValue.username || '' %>"
           placeholder="Enter your username"
+          required
         />
         
         <label for="email">Email</label>
@@ -56,6 +61,7 @@
           class="email"
           value="<%= previousValue.email || '' %>"
           placeholder="Enter your email"
+          required
         />
         <% } %>
 
@@ -68,6 +74,7 @@
             class="identifier"
             value="<%= previousValue.identifier || '' %>"
             placeholder="Enter your email or username"
+            required
           />
         <% } %>
 
@@ -77,7 +84,9 @@
           name="password"
           id="password"
           class="password"
+          minlength="<%= currentPage === 'register' ? 6 : '' %> ""
           placeholder="Enter your password"
+          required
         />
 
         <% if (currentPage === "register") { %>
@@ -88,6 +97,7 @@
           id="confirm-password"
           class="confirm-password"
           placeholder="Enter your password again"
+          required
         />
         <% } %>
 
