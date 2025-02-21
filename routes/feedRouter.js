@@ -1,11 +1,14 @@
 import { Router } from "express";
 import newMessageValidator from "../validators/newMessageValidator.js";
-import { feedGet, feedPost } from "../controllers/feedController.js";
+import {
+  renderFeedGet,
+  addMessagePost,
+} from "../controllers/feedController.js";
 
 const feedRouter = Router();
 
-feedRouter.get("/", feedGet);
+feedRouter.get("/", renderFeedGet);
 
-feedRouter.post("/", newMessageValidator, feedPost);
+feedRouter.post("/add-message", newMessageValidator, addMessagePost);
 
 export default feedRouter;

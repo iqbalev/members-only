@@ -23,7 +23,7 @@
       <section class="form-container">
         <% if (user) { %>
         <button type="button" class="btn-add-message">Add Message</button>
-        <form action="/feed" method="POST" class="add-message-form <%= errors.length > 0 ? "display" : "" %>">
+        <form action="/feed/add-message" method="POST" class="add-message-form <%= errors.length > 0 ? "display" : "" %>">
           <label for="new-message">Add New Message</label>
           <%- include("./partials/formErrors.ejs", { errors }) %>
           <textarea
