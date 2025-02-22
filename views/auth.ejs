@@ -14,58 +14,65 @@
     <main class="auth-content">
       <h2><%= currentPage === "register" ? "Register" : "Login" %></h2>
 
-      <form action="/<%= currentPage === "register" ? "register" : "login" %>" method="POST" class="<%= currentPage %>-form">
-        <%- include("partials/formErrors.ejs", { errors }) %>
+      <section class="auth-section">
+        <form
+          action="/<%= currentPage === 'register' ? 'register' : 'login' %>"
+          method="POST"
+          class="<%= currentPage %>-form"
+        >
+          <%- include("partials/formErrors.ejs", { errors }) %>
 
-        <% if (currentPage === "register") { %>
-        <label for="first-name">First Name</label>
-        <input
-          type="text"
-          name="firstName"
-          id="first-name"
-          class="first-name"
-          value="<%= previousValue.firstName || '' %>"
-          placeholder="Enter your first name"
-          required
-        />
+          <!-- prettier-ignore -->
+          <% if (currentPage === "register") { %>
+          <label for="first-name">First Name</label>
+          <input
+            type="text"
+            name="firstName"
+            id="first-name"
+            class="first-name"
+            value="<%= previousValue.firstName || '' %>"
+            placeholder="Enter your first name"
+            required
+          />
 
-        <label for="last-name">Last Name</label>
-        <input
-          type="text"
-          name="lastName"
-          id="last-name"
-          class="last-name"
-          value="<%= previousValue.lastName || '' %>"
-          placeholder="Enter your last name"
-          required
-        />
+          <label for="last-name">Last Name</label>
+          <input
+            type="text"
+            name="lastName"
+            id="last-name"
+            class="last-name"
+            value="<%= previousValue.lastName || '' %>"
+            placeholder="Enter your last name"
+            required
+          />
 
-        <label for="username">Username</label>
-        <input
-          type="text"
-          name="username"
-          id="username"
-          class="username"
-          minlength="3"
-          maxlength="26"
-          value="<%= previousValue.username || '' %>"
-          placeholder="Enter your username"
-          required
-        />
-        
-        <label for="email">Email</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          class="email"
-          value="<%= previousValue.email || '' %>"
-          placeholder="Enter your email"
-          required
-        />
-        <% } %>
+          <label for="username">Username</label>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            class="username"
+            minlength="3"
+            maxlength="26"
+            value="<%= previousValue.username || '' %>"
+            placeholder="Enter your username"
+            required
+          />
 
-        <% if (currentPage === "login") { %>
+          <label for="email">Email</label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            class="email"
+            value="<%= previousValue.email || '' %>"
+            placeholder="Enter your email"
+            required
+          />
+          <% } %>
+
+          <!-- prettier-ignore -->
+          <% if (currentPage === "login") { %>
           <label for="identifier">Email or Username</label>
           <input
             type="text"
@@ -76,43 +83,43 @@
             placeholder="Enter your email or username"
             required
           />
-        <% } %>
+          <% } %>
 
-        <label for="password">Password</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          class="password"
-          minlength="<%= currentPage === 'register' ? 6 : '' %> ""
-          placeholder="Enter your password"
-          required
-        />
+          <label for="password">Password</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            class="password"
+            minlength="<%= currentPage === 'register' ? '6' : '' %>"
+            placeholder="Enter your password"
+            required
+          />
 
+          <% if (currentPage === "register") { %>
+          <label for="confirm-password">Confirm Password</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            id="confirm-password"
+            class="confirm-password"
+            placeholder="Enter your password again"
+            required
+          />
+          <% } %>
+
+          <button type="submit" class="btn-<%= currentPage %>">
+            <%= currentPage === "register" ? "Register" : "Login" %>
+          </button>
+        </form>
+      </section>
+
+      <section class="navigation-section">
         <% if (currentPage === "register") { %>
-        <label for="confirm-password">Confirm Password</label>
-        <input
-          type="password"
-          name="confirmPassword"
-          id="confirm-password"
-          class="confirm-password"
-          placeholder="Enter your password again"
-          required
-        />
-        <% } %>
+        <span>Already have an account? <a href="/login">Login</a></span>
 
-        <button type="submit" class="btn-<%= currentPage %>">
-          <%= currentPage === "register" ? "Register" : "Login" %>
-        </button>
-      </form>
-
-      <section class="authentication-links">
-        <% if (currentPage === "register") { %>
-            <span>Already have an account?</span>
-            <a href="/login">Login</a>
         <% } else if (currentPage === "login") { %>
-            <span>Don't have an account?</span>
-            <a href="/register">Register</a>
+        <span>Don't have an account? <a href="/register">Register</a></span>
         <% } %>
       </section>
     </main>

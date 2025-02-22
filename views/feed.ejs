@@ -11,19 +11,24 @@
 
     <main class="feed-content">
       <% if (user) { %>
-      <h3>Welcome, <%= user.username %>!</h3>
+      <section class="welcome-section">
+        <h3>Welcome, <%= user.username %>!</h3>
 
-      <% if (user.membership === "basic") { %>
-      <p>
-        You have a <%= user.membership %> membership. Upgrade to premium to
-        access other features!
-      </p>
-      <% } %> <% } %>
+        <% if (user.membership === "basic") { %>
+        <p>
+          You have a <%= user.membership %> membership. Upgrade to premium to
+          access other features!
+        </p>
+        <% } %>
+      </section>
 
-      <section class="form-container">
-        <% if (user) { %>
+      <section class="add-message-section">
         <button type="button" class="btn-add-message">Add Message</button>
-        <form action="/feed/add-message" method="POST" class="add-message-form <%= errors.length > 0 ? "display" : "" %>">
+        <form
+          action="/feed/add-message"
+          method="POST"
+          class="add-message-form <%= errors.length > 0 ? 'display' : '' %>"
+        >
           <label for="new-message">Add New Message</label>
           <%- include("./partials/formErrors.ejs", { errors }) %>
           <textarea
@@ -34,15 +39,17 @@
             required
           ></textarea>
 
-          <div class="form-actions">
+          <div class="add-message-actions">
             <button type="submit" class="btn-submit">Submit</button>
             <button type="button" class="btn-cancel">Cancel</button>
           </div>
         </form>
-        <% } %>
       </section>
+      <% } %>
 
-      <section class="messages-container">
+      <section class="messages-section">
+        <% if (messages && messages.length > 0) { %>
+        <!-- prettier-ignore -->
         <% messages.forEach(({username, createdAt, message}) => { %>
         <article class="message-card">
           <div class="message-header">
@@ -55,6 +62,13 @@
           </div>
         </article>
         <% }) %>
+
+        <!-- prettier-ignore -->
+        <% } else { %>
+        <div class="no-message-notice">
+          <p>No message found yet. Be the first to post!</p>
+        </div>
+        <% } %>
       </section>
     </main>
 
@@ -64,27 +78,30 @@
       const cancelButton = document.querySelector(".btn-cancel");
 
       function toggleAddMessageForm() {
-        if (!addMessageForm.classList.contains("display")) {
-          addMessageForm.classList.add("display");
+        if (!addMessageForm) return;
+
+        addMessageForm.classList.toggle("display");
+        if (addMessageForm.classList.contains("display")) {
           addMessageForm.style.display = "flex";
         } else {
-          addMessageForm.classList.remove("display");
           addMessageForm.style.display = "none";
         }
       }
 
       function closeAddMessageForm() {
+        if (!addMessageForm) return;
+
         addMessageForm.classList.remove("display");
         addMessageForm.style.display = "none";
       }
 
-
-      if (addMessageForm.classList.contains("display")) {
-        addMessageForm.style.display = "flex";
+      if (addMessageButton) {
+        addMessageButton.addEventListener("click", toggleAddMessageForm);
       }
 
-      addMessageButton.addEventListener("click", toggleAddMessageForm);
-      cancelButton.addEventListener("click", closeAddMessageForm);
+      if (cancelButton) {
+        cancelButton.addEventListener("click", closeAddMessageForm);
+      }
     </script>
   </body>
 </html>
