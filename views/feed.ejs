@@ -24,19 +24,14 @@
 
       <section class="add-message-section">
         <button type="button" class="btn-add-message">Add Message</button>
-        <form
-          action="/feed/add-message"
-          method="POST"
-          class="add-message-form <%= errors.length > 0 ? 'display' : '' %>"
-        >
+        <form action="/feed/add-message" method="POST" class="add-message-form">
           <label for="new-message">Add New Message</label>
-          <%- include("./partials/formErrors.ejs", { errors }) %>
+
           <textarea
             name="newMessage"
             id="new-message"
             class="new-message"
             placeholder="Insert messages here..."
-            required
           ></textarea>
 
           <div class="add-message-actions">
@@ -101,6 +96,55 @@
 
       if (cancelButton) {
         cancelButton.addEventListener("click", closeAddMessageForm);
+      }
+
+      if (addMessageForm) {
+        addMessageForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          document
+            .querySelectorAll(".new-message-validation-messages")
+            .forEach((el) => el.remove());
+
+          const newMessage = document.querySelector(".new-message");
+          const trimmedNewMessage = newMessage.value.trim();
+
+          if (trimmedNewMessage === "") {
+            const ul = document.createElement("ul");
+            ul.classList.add("new-message-validation-messages");
+
+            const li = document.createElement("li");
+            li.textContent = "Please enter some text.";
+
+            ul.appendChild(li);
+            addMessageForm.insertBefore(ul, newMessage);
+
+            return;
+          }
+
+          const response = await fetch("/feed/add-message", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ newMessage: trimmedNewMessage }),
+          });
+
+          const result = await response.json();
+          if (result.errors) {
+            const ul = document.createElement("ul");
+            ul.classList.add("new-message-validation-messages");
+
+            result.errors.forEach((error) => {
+              const li = document.createElement("li");
+              li.textContent = error.msg;
+              ul.appendChild(li);
+            });
+
+            addMessageForm.insertBefore(ul, newMessage);
+          } else {
+            addMessageForm.reset();
+            location.reload();
+          }
+        });
       }
     </script>
   </body>
