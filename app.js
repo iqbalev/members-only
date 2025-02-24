@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import dotenv from "dotenv";
 import express from "express";
+import methodOverride from "method-override";
 import session from "express-session";
 import passport from "./config/passportConfig.js";
 import feedRouter from "./routes/feedRouter.js";
@@ -21,6 +22,7 @@ app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(methodOverride("_method"));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,

@@ -3,6 +3,7 @@ import {
   getMessages,
   createMessage,
   updateUserMembership,
+  deleteMessage,
 } from "../database/dbQueries.js";
 import formatMessages from "../utils/formatMessages.js";
 
@@ -41,6 +42,17 @@ export const upgradeToPremiumPost = async (req, res) => {
 
   const userUsername = res.locals.user.username;
   await updateUserMembership("premium", userUsername);
+
+  return res.json({ success: true });
+};
+
+export const deleteMessageDelete = async (req, res) => {
+  const { messageId } = req.params;
+  const deletedMessage = await deleteMessage(messageId);
+
+  if (!deletedMessage) {
+    return res.status(404).json({ error: "Message not found." });
+  }
 
   return res.json({ success: true });
 };

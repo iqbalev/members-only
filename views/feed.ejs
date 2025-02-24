@@ -82,10 +82,20 @@
       <section class="messages-section">
         <% if (messages && messages.length > 0) { %>
         <!-- prettier-ignore -->
-        <% messages.forEach(({username, createdAt, message}) => { %>
+        <% messages.forEach(({id, username, createdAt, message}) => { %>
         <article class="message-card">
           <div class="message-header">
             <p class="message-username"><%= username %></p>
+
+            <% if(user && user.membership === "admin") { %>
+            <form
+              action="/feed/<%= id %>/delete-message?_method=DELETE"
+              method="POST"
+              class="delete-message-form"
+            >
+              <button type="submit" class="btn-delete">Delete</button>
+            </form>
+            <% } %>
           </div>
 
           <div class="message-body">
@@ -279,6 +289,54 @@
             addMessageForm.reset();
             location.reload();
           }
+        });
+      }
+
+      const deleteMessageForms = document.querySelectorAll(
+        ".delete-message-form"
+      );
+
+      if (deleteMessageForms) {
+        deleteMessageForms.forEach((deleteMessageForm) => {
+          deleteMessageForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const confirmDelete = confirm("Are you sure?");
+            if (!confirmDelete) return;
+
+            const formAction = deleteMessageForm.getAttribute("action");
+            const response = await fetch(formAction, {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+            });
+
+            if (!response.ok) {
+              const result = await response.json();
+              alert(result.error || "Failed to delete message.");
+              return;
+            }
+
+            deleteMessageForm.closest(".message-card").remove();
+
+            const remainingMessages =
+              document.querySelectorAll(".message-card");
+
+            if (remainingMessages.length === 0) {
+              const messagesSection =
+                document.querySelector(".messages-section");
+
+              if (!document.querySelector(".no-message-notice")) {
+                const noMessageNotice = document.createElement("div");
+                noMessageNotice.classList.add("no-message-notice");
+                const noMessageNoticeText = document.createElement("p");
+                noMessageNoticeText.textContent =
+                  "No message found yet. Be the first to post!";
+
+                noMessageNotice.appendChild(noMessageNoticeText);
+                messagesSection.appendChild(noMessageNotice);
+              }
+            }
+          });
         });
       }
     </script>

@@ -5,6 +5,7 @@ import {
   renderFeedGet,
   upgradeToPremiumPost,
   addMessagePost,
+  deleteMessageDelete,
 } from "../controllers/feedController.js";
 
 const feedRouter = Router();
@@ -18,5 +19,7 @@ feedRouter.post(
 );
 
 feedRouter.post("/add-message", newMessageValidator, addMessagePost);
+
+feedRouter.delete("/:messageId/delete-message", deleteMessageDelete);
 
 export default feedRouter;
