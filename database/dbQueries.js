@@ -40,6 +40,13 @@ export async function getUserByIdentifier(identifier) {
   return rows[0];
 }
 
+export async function updateUserMembership(membershipLevel, username) {
+  await dbPool.query("UPDATE users SET membership = $1 WHERE username = $2", [
+    membershipLevel,
+    username,
+  ]);
+}
+
 export async function createMessage(userId, message) {
   await dbPool.query(
     "INSERT INTO messages (user_id, message) VALUES ($1, $2)",

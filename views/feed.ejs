@@ -12,14 +12,50 @@
     <main class="feed-content">
       <% if (user) { %>
       <section class="welcome-section">
-        <h3>Welcome, <%= user.username %>!</h3>
+        <h3>Hi, <%= user.username %>!</h3>
 
         <% if (user.membership === "basic") { %>
         <p>
-          You have a <%= user.membership %> membership. Upgrade to premium to
-          access other features!
+          You're on a <%= user.membership %> membership. Upgrade to premium to
+          <button type="button" class="btn-upgrade-to-premium">here</button>
+          see when and who sent each message.
         </p>
         <% } %>
+
+        <dialog class="upgrade-to-premium-modal">
+          <form
+            action="/feed/upgrade-to-premium"
+            method="POST"
+            class="upgrade-to-premium-form"
+          >
+            <div class="secret-code-hints">
+              <h4>Answer these questions to unlock premium!</h4>
+              <ul>
+                <li>I store values but can change anytime.</li>
+                <li>I repeat tasks until told to stop.</li>
+                <li>I decide what happens next.</li>
+                <li>I hold many things inside me.</li>
+              </ul>
+              <p>Hint: Take the first letter of each point.</p>
+            </div>
+
+            <div class="secret-code-field">
+              <label for="secret-code">Secret Code</label>
+              <input
+                type="text"
+                name="secretCode"
+                id="secret-code"
+                class="secret-code"
+                required
+              />
+            </div>
+
+            <div class="upgrade-to-premium-actions">
+              <button type="submit" class="btn-confirm">Confirm</button>
+              <button type="button" class="btn-close">Close</button>
+            </div>
+          </form>
+        </dialog>
       </section>
 
       <section class="add-message-section">
@@ -32,6 +68,7 @@
             id="new-message"
             class="new-message"
             placeholder="Insert messages here..."
+            required
           ></textarea>
 
           <div class="add-message-actions">
@@ -68,6 +105,104 @@
     </main>
 
     <script>
+      // Upgrade to premium handling
+      const upgradeToPremiumButton = document.querySelector(
+        ".btn-upgrade-to-premium"
+      );
+      const upgradeToPremiumModal = document.querySelector(
+        ".upgrade-to-premium-modal"
+      );
+
+      const upgradeToPremiumForm = document.querySelector(
+        ".upgrade-to-premium-form"
+      );
+
+      const closeButton = document.querySelector(".btn-close");
+
+      function openUpgradeToPremiumModal() {
+        if (upgradeToPremiumModal) {
+          upgradeToPremiumModal.showModal();
+        }
+      }
+
+      function closeUpgradeToPremiumModal() {
+        if (upgradeToPremiumModal) {
+          upgradeToPremiumModal.close();
+        }
+
+        if (upgradeToPremiumForm) {
+          upgradeToPremiumForm.reset();
+        }
+      }
+
+      if (upgradeToPremiumButton) {
+        upgradeToPremiumButton.addEventListener(
+          "click",
+          openUpgradeToPremiumModal
+        );
+      }
+
+      if (closeButton) {
+        closeButton.addEventListener("click", closeUpgradeToPremiumModal);
+      }
+
+      if (upgradeToPremiumForm) {
+        upgradeToPremiumForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          document
+            .querySelectorAll(".secret-code-validation-messages")
+            .forEach((el) => el.remove());
+
+          const secretCode = document.querySelector(".secret-code");
+          const trimmedSecretCodeValue = secretCode.value.trim();
+
+          if (trimmedSecretCodeValue === "") {
+            const ul = document.createElement("ul");
+            ul.classList.add("secret-code-validation-messages");
+
+            const li = document.createElement("li");
+            li.textContent = "Please enter the code.";
+
+            ul.appendChild(li);
+
+            const secretCodeField =
+              document.querySelector(".secret-code-field");
+            secretCodeField.insertBefore(ul, secretCode);
+
+            return;
+          }
+
+          const response = await fetch("/feed/upgrade-to-premium", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ secretCode: trimmedSecretCodeValue }),
+          });
+
+          const result = await response.json();
+          if (result.errors) {
+            const ul = document.createElement("ul");
+            ul.classList.add("secret-code-validation-messages");
+
+            result.errors.forEach((error) => {
+              const li = document.createElement("li");
+              li.textContent = error.msg;
+              ul.appendChild(li);
+            });
+
+            const secretCodeField =
+              document.querySelector(".secret-code-field");
+            secretCodeField.insertBefore(ul, secretCode);
+
+            upgradeToPremiumForm.reset();
+          } else {
+            alert("Awesome! You're now a premium member!");
+            location.reload();
+          }
+        });
+      }
+
+      // Add message handling
       const addMessageButton = document.querySelector(".btn-add-message");
       const addMessageForm = document.querySelector(".add-message-form");
       const cancelButton = document.querySelector(".btn-cancel");
