@@ -59,6 +59,7 @@ export async function getMessages() {
     SELECT users.username, messages.id, messages.message, messages.created_at
     FROM messages
     JOIN users ON messages.user_id = users.id
+    WHERE messages.deleted_at IS NULL
     ORDER BY messages.created_at DESC
   `);
 
@@ -67,7 +68,7 @@ export async function getMessages() {
 
 export async function deleteMessage(id) {
   const { rows } = await dbPool.query(
-    "DELETE FROM messages WHERE id = $1 RETURNING id",
+    "UPDATE messages SET deleted_at = NOW() WHERE id = $1 RETURNING id",
     [id]
   );
 
