@@ -9,7 +9,7 @@ import formatMessages from "../utils/formatMessages.js";
 
 export const renderFeedGet = async (req, res) => {
   const userMembership = res.locals.user?.membership || "guest";
-  const isAdmin = res.locals.user?.is_admin || "guest";
+  const isAdmin = res.locals.user?.is_admin || false;
   const messages = await getMessages();
   const formattedMessages = formatMessages(messages, userMembership, isAdmin);
 
