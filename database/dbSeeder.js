@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import pkg from "pg";
+import bcryptjs from "bcryptjs";
 
 dotenv.config();
 
@@ -16,7 +17,8 @@ const createUsersTable = `
     username VARCHAR(26) UNIQUE NOT NULL,
     email VARCHAR(320) UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    membership VARCHAR(20) CHECK (membership IN ('basic', 'premium', 'admin')) DEFAULT 'basic',
+    membership VARCHAR(20) CHECK (membership IN ('basic', 'premium')) DEFAULT 'basic',
+    is_admin BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
   );`;
 
@@ -53,6 +55,26 @@ async function seedDb() {
     console.log("Created new 'users' table.");
     await client.query(createMessagesTable);
     console.log("Created new 'messages' table.");
+
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    const hashedAdminPassword = await bcryptjs.hash(adminPassword, 10);
+
+    await client.query(
+      `INSERT INTO users (first_name, last_name, username, email, password, membership, is_admin, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [
+        "Admin",
+        "User",
+        "Admin",
+        adminEmail,
+        hashedAdminPassword,
+        "premium",
+        true,
+        new Date(),
+      ]
+    );
+
+    console.log("Inserted admin account.");
 
     console.log("Seeding completed!");
   } catch (error) {

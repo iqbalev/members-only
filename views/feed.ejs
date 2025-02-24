@@ -14,7 +14,7 @@
       <section class="welcome-section">
         <h3>Hi, <%= user.username %>!</h3>
 
-        <% if (user.membership === "basic") { %>
+        <% if (user.membership === "basic" && !user.is_admin) { %>
         <p>
           You're on a <%= user.membership %> membership. Upgrade to premium to
           <button type="button" class="btn-upgrade-to-premium">here</button>
@@ -87,7 +87,7 @@
           <div class="message-header">
             <p class="message-username"><%= username %></p>
 
-            <% if(user && user.membership === "admin") { %>
+            <% if(user && user.is_admin) { %>
             <form
               action="/feed/<%= id %>/delete-message?_method=DELETE"
               method="POST"
