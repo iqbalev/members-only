@@ -18,7 +18,7 @@
         <p>
           You're on a <%= user.membership %> membership. Upgrade to premium to
           <button type="button" class="btn-upgrade-to-premium">here</button>
-          see when and who sent each message.
+          access more features.
         </p>
         <% } %>
 
@@ -87,12 +87,14 @@
 
         <% if (messages && messages.length > 0) { %>
         <!-- prettier-ignore -->
-        <% messages.forEach(({id, username, createdAt, message}) => { %>
+        <% messages.forEach(({id, userId, username, createdAt, message}) => { %>
         <article class="message-card">
           <div class="message-header">
             <p class="message-username"><%= username %></p>
 
-            <% if(user && user.is_admin) { %>
+            <% if (user) { %>
+            <!-- prettier-ignore -->
+            <% if (user.is_admin || (user.membership === "premium" && userId === user.id)) { %>
             <form
               action="/feed/<%= id %>/delete-message?_method=DELETE"
               method="POST"
@@ -100,7 +102,7 @@
             >
               <button type="submit" class="btn-delete">Delete</button>
             </form>
-            <% } %>
+            <% } %> <% } %>
           </div>
 
           <div class="message-body">

@@ -2,6 +2,7 @@ import formatTimestamp from "./formatTimestamp.js";
 
 function formatMessages(messages, userMembership, isAdmin) {
   return messages.map((message) => {
+    let userId = message.user_id;
     let username = "Someone";
     let createdAt = "A while ago";
 
@@ -10,7 +11,7 @@ function formatMessages(messages, userMembership, isAdmin) {
       createdAt = formatTimestamp(message.created_at);
     }
 
-    return { ...message, username, createdAt };
+    return { ...message, userId, username, createdAt };
   });
 }
 

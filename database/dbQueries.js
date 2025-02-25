@@ -64,7 +64,7 @@ export async function createMessage(userId, message) {
 
 export async function getMessages() {
   const { rows } = await dbPool.query(`
-    SELECT users.username, messages.id, messages.message, messages.created_at
+    SELECT users.username, messages.id, messages.user_id, messages.message, messages.created_at
     FROM messages
     JOIN users ON messages.user_id = users.id
     WHERE messages.deleted_at IS NULL
