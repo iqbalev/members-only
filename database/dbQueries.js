@@ -13,14 +13,22 @@ export async function createUser(
   );
 }
 
-export async function getUserUsername() {
-  const { rows } = await dbPool.query("SELECT username FROM users");
-  return rows;
+export async function getUsernameByUsername(username) {
+  const { rows } = await dbPool.query(
+    "SELECT username FROM users WHERE username = $1",
+    [username]
+  );
+
+  return rows[0];
 }
 
-export async function getUserEmail() {
-  const { rows } = await dbPool.query("SELECT email FROM users");
-  return rows;
+export async function getEmailByEmail(email) {
+  const { rows } = await dbPool.query(
+    "SELECT email FROM users WHERE email = $1",
+    [email]
+  );
+
+  return rows[0];
 }
 
 export async function getUserById(id) {
@@ -33,7 +41,7 @@ export async function getUserById(id) {
 
 export async function getUserByIdentifier(identifier) {
   const { rows } = await dbPool.query(
-    "SELECT * FROM users WHERE email = $1 OR username = $1 LIMIT 1",
+    "SELECT * FROM users WHERE username = $1 OR email = $1 LIMIT 1",
     [identifier]
   );
 

@@ -24,9 +24,17 @@ export const registerPost = async (req, res, next) => {
     }
 
     const { firstName, lastName, username, email, password } = req.body;
-
+    const lowerCasedEmail = email.toLowerCase();
     const hashedPassword = await bcryptjs.hash(password, 10);
-    await createUser(firstName, lastName, username, email, hashedPassword);
+
+    await createUser(
+      firstName,
+      lastName,
+      username,
+      lowerCasedEmail,
+      hashedPassword
+    );
+
     return res.redirect("/login");
   } catch (error) {
     return next(error);

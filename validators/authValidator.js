@@ -1,5 +1,8 @@
 import { body } from "express-validator";
-import { getUserUsername, getUserEmail } from "../database/dbQueries.js";
+import {
+  getUsernameByUsername,
+  getEmailByEmail,
+} from "../database/dbQueries.js";
 
 export const registerValidator = [
   [
@@ -26,9 +29,8 @@ export const registerValidator = [
       .isLength({ min: 3, max: 26 })
       .withMessage("Username must be between 3 and 26 characters long.")
       .custom(async (value) => {
-        const existingUsername = await getUserUsername();
-        const match = existingUsername.some((user) => user.username === value);
-        if (match) throw new Error("Username is already taken.");
+        const existingUsername = await getUsernameByUsername(value);
+        if (existingUsername) throw new Error("Username is already taken.");
       }),
 
     body("email")
@@ -38,9 +40,8 @@ export const registerValidator = [
       .isEmail()
       .withMessage("Email is invalid.")
       .custom(async (value) => {
-        const existingEmail = await getUserEmail();
-        const match = existingEmail.some((user) => user.email === value);
-        if (match) throw new Error("Email is already taken.");
+        const existingEmail = await getEmailByEmail(value);
+        if (existingEmail) throw new Error("Email is already taken.");
       }),
 
     body("password")

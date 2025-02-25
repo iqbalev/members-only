@@ -6,16 +6,18 @@ dotenv.config();
 
 const { Client } = pkg;
 
-const dropMessagesTable = "DROP TABLE IF EXISTS messages";
-const dropUsersTable = "DROP TABLE IF EXISTS users";
+const dropMessagesTable = "DROP TABLE IF EXISTS messages;";
+const dropUsersTable = "DROP TABLE IF EXISTS users;";
+const dropCitextExtension = "DROP EXTENSION IF EXISTS citext;";
 
+const createCitextExtension = "CREATE EXTENSION IF NOT EXISTS citext;";
 const createUsersTable = `
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    username VARCHAR(26) UNIQUE NOT NULL,
-    email VARCHAR(320) UNIQUE NOT NULL,
+    username CITEXT UNIQUE NOT NULL,
+    email CITEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     membership VARCHAR(20) CHECK (membership IN ('basic', 'premium')) DEFAULT 'basic',
     is_admin BOOLEAN DEFAULT FALSE,
@@ -50,7 +52,11 @@ async function seedDb() {
     console.log("Dropped existing 'messages' table.");
     await client.query(dropUsersTable);
     console.log("Dropped existing 'users' table.");
+    await client.query(dropCitextExtension);
+    console.log("Dropped CITEXT extension.");
 
+    await client.query(createCitextExtension);
+    console.log("Created CITEXT extension.");
     await client.query(createUsersTable);
     console.log("Created new 'users' table.");
     await client.query(createMessagesTable);
