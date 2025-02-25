@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
 import {
+  getMessagesCount,
   getMessages,
   createMessage,
   updateUserMembership,
@@ -10,11 +11,13 @@ import formatMessages from "../utils/formatMessages.js";
 export const renderFeedGet = async (req, res) => {
   const userMembership = res.locals.user?.membership || "guest";
   const isAdmin = res.locals.user?.is_admin || false;
+  const messagesCount = await getMessagesCount();
   const messages = await getMessages();
   const formattedMessages = formatMessages(messages, userMembership, isAdmin);
 
   return res.render("feed", {
     currentPage: "feed",
+    messagesCount: messagesCount,
     messages: formattedMessages,
   });
 };

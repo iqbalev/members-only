@@ -66,6 +66,13 @@ export async function getMessages() {
   return rows;
 }
 
+export async function getMessagesCount() {
+  const { rows } = await dbPool.query(
+    "SELECT COUNT (*) FROM messages WHERE deleted_at IS NULL"
+  );
+  return parseInt(rows[0].count, 10);
+}
+
 export async function deleteMessage(id) {
   const { rows } = await dbPool.query(
     "UPDATE messages SET deleted_at = NOW() WHERE id = $1 RETURNING id",

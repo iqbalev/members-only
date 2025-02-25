@@ -2,8 +2,8 @@ import formatTimestamp from "./formatTimestamp.js";
 
 function formatMessages(messages, userMembership, isAdmin) {
   return messages.map((message) => {
-    let username = "Member";
-    let createdAt = "Sometime ago...";
+    let username = "Someone";
+    let createdAt = "A while ago";
 
     if (userMembership === "premium" || isAdmin === true) {
       username = message.username;
