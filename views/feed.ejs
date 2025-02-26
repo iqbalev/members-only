@@ -12,8 +12,6 @@
     <main class="feed-content">
       <% if (user) { %>
       <section class="welcome-section">
-        <h3>Hi, <%= user.username %>!</h3>
-
         <% if (user.membership === "basic" && !user.is_admin) { %>
         <p>
           You're on a <%= user.membership %> membership. Upgrade to premium to
@@ -46,6 +44,7 @@
                 name="secretCode"
                 id="secret-code"
                 class="secret-code"
+                placeholder="Enter secret code"
                 required
               />
             </div>
@@ -59,7 +58,7 @@
       </section>
 
       <section class="add-message-section">
-        <button type="button" class="btn-add-message">Add Message</button>
+        <button type="button" class="btn-add-message">+ Message</button>
         <form action="/feed/add-message" method="POST" class="add-message-form">
           <label for="new-message">Add New Message</label>
 
@@ -90,19 +89,25 @@
         <% messages.forEach(({id, userId, username, createdAt, message}) => { %>
         <article class="message-card">
           <div class="message-header">
-            <p class="message-username"><%= username %></p>
+            <div class="message-header-img">
+              <img src="/icons/icon-user.svg" alt="icon-user-img" />
+            </div>
 
-            <% if (user) { %>
-            <!-- prettier-ignore -->
-            <% if (user.is_admin || (user.membership === "premium" && userId === user.id)) { %>
-            <form
-              action="/feed/<%= id %>/delete-message?_method=DELETE"
-              method="POST"
-              class="delete-message-form"
-            >
-              <button type="submit" class="btn-delete">Delete</button>
-            </form>
-            <% } %> <% } %>
+            <div class="message-header-username-actions">
+              <p class="message-username"><%= username %></p>
+
+              <% if (user) { %>
+              <!-- prettier-ignore -->
+              <% if (user.is_admin || (user.membership === "premium" && userId === user.id)) { %>
+              <form
+                action="/feed/<%= id %>/delete-message?_method=DELETE"
+                method="POST"
+                class="delete-message-form"
+              >
+                <button type="submit" class="btn-delete">Delete</button>
+              </form>
+              <% } %> <% } %>
+            </div>
           </div>
 
           <div class="message-body">
@@ -120,6 +125,8 @@
         <% } %>
       </section>
     </main>
+
+    <%- include("./partials/footer.ejs") %>
 
     <script>
       // Upgrade to premium handling
@@ -308,7 +315,9 @@
           deleteMessageForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            const confirmDelete = confirm("Are you sure?");
+            const confirmDelete = confirm(
+              "Are you sure you want to delete this message?"
+            );
             if (!confirmDelete) return;
 
             const formAction = deleteMessageForm.getAttribute("action");
