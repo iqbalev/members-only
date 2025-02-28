@@ -10,7 +10,61 @@
     <%- include("../views/partials/header.ejs", { currentPage }) %>
 
     <main class="root-content">
-      <h2><%= title %></h2>
+      <!-- <h2><%= title %></h2> -->
+
+      <section class="features-overview">
+        <h2>Features Overview</h2>
+        <p>
+          <strong>Members Only</strong> is a simple public messaging web app
+          built with JavaScript and EJS for the frontend, Express.js for the
+          backend, and PostgreSQL for the database.
+        </p>
+
+        <p>Membership levels offer different features, as outlined below:</p>
+
+        <article class="guest-features">
+          <h3>Guest</h3>
+          <ul>
+            <li>View messages.</li>
+          </ul>
+        </article>
+
+        <article class="basic-features">
+          <h3>Basic</h3>
+          <ul>
+            <li>View messages.</li>
+            <li>Post messages.</li>
+          </ul>
+        </article>
+
+        <article class="premium-features">
+          <h3>Premium</h3>
+          <ul>
+            <li>View messages.</li>
+            <li>Post messages.</li>
+            <li>See sender and time of messages.</li>
+            <li>Delete their own messages.</li>
+          </ul>
+        </article>
+
+        <article class="admin-features">
+          <h3>Admin</h3>
+          <ul>
+            <li>Full access and delete all messages.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="home-navigation-links">
+        <h2>Get Started</h2>
+        <ul>
+          <li><a href="/login">Log In</a></li>
+          <li><a href="/register">Register</a></li>
+          <li><a href="/feed">View as Guest</a></li>
+        </ul>
+      </section>
     </main>
+
+    <%- include("./partials/footer.ejs") %>
   </body>
 </html>

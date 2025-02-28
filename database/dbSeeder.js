@@ -1,22 +1,26 @@
 import dotenv from "dotenv";
 import pkg from "pg";
+import bcryptjs from "bcryptjs";
 
 dotenv.config();
 
 const { Client } = pkg;
 
-const dropMessagesTable = "DROP TABLE IF EXISTS messages";
-const dropUsersTable = "DROP TABLE IF EXISTS users";
+const dropMessagesTable = "DROP TABLE IF EXISTS messages;";
+const dropUsersTable = "DROP TABLE IF EXISTS users;";
+const dropCitextExtension = "DROP EXTENSION IF EXISTS citext;";
 
+const createCitextExtension = "CREATE EXTENSION IF NOT EXISTS citext;";
 const createUsersTable = `
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    username VARCHAR(26) UNIQUE NOT NULL,
-    email VARCHAR(320) UNIQUE NOT NULL,
+    username CITEXT UNIQUE NOT NULL,
+    email CITEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    membership VARCHAR(20) CHECK (membership IN ('basic', 'premium', 'admin')) DEFAULT 'basic',
+    membership VARCHAR(20) CHECK (membership IN ('basic', 'premium')) DEFAULT 'basic',
+    is_admin BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
   );`;
 
@@ -25,7 +29,8 @@ const createMessagesTable = `
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     message TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMPTZ DEFAULT NULL
   );`;
 
 async function seedDb() {
@@ -47,11 +52,35 @@ async function seedDb() {
     console.log("Dropped existing 'messages' table.");
     await client.query(dropUsersTable);
     console.log("Dropped existing 'users' table.");
+    await client.query(dropCitextExtension);
+    console.log("Dropped CITEXT extension.");
 
+    await client.query(createCitextExtension);
+    console.log("Created CITEXT extension.");
     await client.query(createUsersTable);
     console.log("Created new 'users' table.");
     await client.query(createMessagesTable);
     console.log("Created new 'messages' table.");
+
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    const hashedAdminPassword = await bcryptjs.hash(adminPassword, 10);
+
+    await client.query(
+      `INSERT INTO users (first_name, last_name, username, email, password, membership, is_admin, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [
+        "Admin",
+        "User",
+        "Admin",
+        adminEmail,
+        hashedAdminPassword,
+        "premium",
+        true,
+        new Date(),
+      ]
+    );
+
+    console.log("Inserted admin account.");
 
     console.log("Seeding completed!");
   } catch (error) {

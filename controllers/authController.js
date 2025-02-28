@@ -3,7 +3,6 @@ import bcryptjs from "bcryptjs";
 import { validationResult } from "express-validator";
 import { createUser } from "../database/dbQueries.js";
 
-// Register Controllers
 export const registerGet = (req, res) => {
   res.render("auth", {
     errors: [],
@@ -24,16 +23,23 @@ export const registerPost = async (req, res, next) => {
     }
 
     const { firstName, lastName, username, email, password } = req.body;
-
+    const lowerCasedEmail = email.toLowerCase();
     const hashedPassword = await bcryptjs.hash(password, 10);
-    await createUser(firstName, lastName, username, email, hashedPassword);
+
+    await createUser(
+      firstName,
+      lastName,
+      username,
+      lowerCasedEmail,
+      hashedPassword
+    );
+
     return res.redirect("/login");
   } catch (error) {
     return next(error);
   }
 };
 
-// Login Controllers
 export const loginGet = (req, res) => {
   res.render("auth", { errors: [], currentPage: "login", previousValue: {} });
 };
@@ -71,7 +77,6 @@ export const loginPost = async (req, res, next) => {
   })(req, res, next);
 };
 
-// Logout Controllers
 export const logoutPost = (req, res, next) => {
   req.logOut((err) => {
     if (err) {

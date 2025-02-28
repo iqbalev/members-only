@@ -12,25 +12,56 @@
     <main class="feed-content">
       <% if (user) { %>
       <section class="welcome-section">
-        <h3>Welcome, <%= user.username %>!</h3>
-
-        <% if (user.membership === "basic") { %>
+        <% if (user.membership === "basic" && !user.is_admin) { %>
         <p>
-          You have a <%= user.membership %> membership. Upgrade to premium to
-          access other features!
+          You're on a <%= user.membership %> membership. Upgrade to premium to
+          <button type="button" class="btn-upgrade-to-premium">here</button>
+          access more features.
         </p>
         <% } %>
+
+        <dialog class="upgrade-to-premium-modal">
+          <form
+            action="/feed/upgrade-to-premium"
+            method="POST"
+            class="upgrade-to-premium-form"
+          >
+            <div class="secret-code-hints">
+              <h3>Unlock Premium by Solving This!</h3>
+              <ul>
+                <li>I store values but can change anytime.</li>
+                <li>I repeat tasks until told to stop.</li>
+                <li>I decide what happens next.</li>
+                <li>I hold many things inside me.</li>
+              </ul>
+              <p>Hint: Take the first letter of each.</p>
+            </div>
+
+            <div class="secret-code-field">
+              <label for="secret-code">Secret Code</label>
+              <input
+                type="text"
+                name="secretCode"
+                id="secret-code"
+                class="secret-code"
+                placeholder="Enter secret code"
+                required
+              />
+            </div>
+
+            <div class="upgrade-to-premium-actions">
+              <button type="submit" class="btn-confirm">Confirm</button>
+              <button type="button" class="btn-close">Close</button>
+            </div>
+          </form>
+        </dialog>
       </section>
 
       <section class="add-message-section">
-        <button type="button" class="btn-add-message">Add Message</button>
-        <form
-          action="/feed/add-message"
-          method="POST"
-          class="add-message-form <%= errors.length > 0 ? 'display' : '' %>"
-        >
+        <button type="button" class="btn-add-message">+ Message</button>
+        <form action="/feed/add-message" method="POST" class="add-message-form">
           <label for="new-message">Add New Message</label>
-          <%- include("./partials/formErrors.ejs", { errors }) %>
+
           <textarea
             name="newMessage"
             id="new-message"
@@ -48,12 +79,35 @@
       <% } %>
 
       <section class="messages-section">
+        <h3 class="messages-count">
+          <%= messagesCount <= 1 ? `(${messagesCount}) Message` :
+          `(${messagesCount}) Messages` %>
+        </h3>
+
         <% if (messages && messages.length > 0) { %>
         <!-- prettier-ignore -->
-        <% messages.forEach(({username, createdAt, message}) => { %>
+        <% messages.forEach(({id, userId, username, createdAt, message}) => { %>
         <article class="message-card">
           <div class="message-header">
-            <p class="message-username"><%= username %></p>
+            <div class="message-header-img">
+              <img src="/icons/icon-user.svg" alt="icon-user-img" />
+            </div>
+
+            <div class="message-header-username-actions">
+              <p class="message-username"><%= username %></p>
+
+              <% if (user) { %>
+              <!-- prettier-ignore -->
+              <% if (user.is_admin || (user.membership === "premium" && userId === user.id)) { %>
+              <form
+                action="/feed/<%= id %>/delete-message?_method=DELETE"
+                method="POST"
+                class="delete-message-form"
+              >
+                <button type="submit" class="btn-delete">Delete</button>
+              </form>
+              <% } %> <% } %>
+            </div>
           </div>
 
           <div class="message-body">
@@ -72,7 +126,107 @@
       </section>
     </main>
 
+    <%- include("./partials/footer.ejs") %>
+
     <script>
+      // Upgrade to premium handling
+      const upgradeToPremiumButton = document.querySelector(
+        ".btn-upgrade-to-premium"
+      );
+      const upgradeToPremiumModal = document.querySelector(
+        ".upgrade-to-premium-modal"
+      );
+
+      const upgradeToPremiumForm = document.querySelector(
+        ".upgrade-to-premium-form"
+      );
+
+      const closeButton = document.querySelector(".btn-close");
+
+      function openUpgradeToPremiumModal() {
+        if (upgradeToPremiumModal) {
+          upgradeToPremiumModal.showModal();
+        }
+      }
+
+      function closeUpgradeToPremiumModal() {
+        if (upgradeToPremiumModal) {
+          upgradeToPremiumModal.close();
+        }
+
+        if (upgradeToPremiumForm) {
+          upgradeToPremiumForm.reset();
+        }
+      }
+
+      if (upgradeToPremiumButton) {
+        upgradeToPremiumButton.addEventListener(
+          "click",
+          openUpgradeToPremiumModal
+        );
+      }
+
+      if (closeButton) {
+        closeButton.addEventListener("click", closeUpgradeToPremiumModal);
+      }
+
+      if (upgradeToPremiumForm) {
+        upgradeToPremiumForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          document
+            .querySelectorAll(".secret-code-validation-messages")
+            .forEach((el) => el.remove());
+
+          const secretCode = document.querySelector(".secret-code");
+          const trimmedSecretCodeValue = secretCode.value.trim();
+
+          if (trimmedSecretCodeValue === "") {
+            const ul = document.createElement("ul");
+            ul.classList.add("secret-code-validation-messages");
+
+            const li = document.createElement("li");
+            li.textContent = "Please enter the code.";
+
+            ul.appendChild(li);
+
+            const secretCodeField =
+              document.querySelector(".secret-code-field");
+            secretCodeField.insertBefore(ul, secretCode);
+
+            return;
+          }
+
+          const response = await fetch("/feed/upgrade-to-premium", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ secretCode: trimmedSecretCodeValue }),
+          });
+
+          const result = await response.json();
+          if (result.errors) {
+            const ul = document.createElement("ul");
+            ul.classList.add("secret-code-validation-messages");
+
+            result.errors.forEach((error) => {
+              const li = document.createElement("li");
+              li.textContent = error.msg;
+              ul.appendChild(li);
+            });
+
+            const secretCodeField =
+              document.querySelector(".secret-code-field");
+            secretCodeField.insertBefore(ul, secretCode);
+
+            upgradeToPremiumForm.reset();
+          } else {
+            alert("Awesome! You're now a premium member!");
+            location.reload();
+          }
+        });
+      }
+
+      // Add message handling
       const addMessageButton = document.querySelector(".btn-add-message");
       const addMessageForm = document.querySelector(".add-message-form");
       const cancelButton = document.querySelector(".btn-cancel");
@@ -101,6 +255,116 @@
 
       if (cancelButton) {
         cancelButton.addEventListener("click", closeAddMessageForm);
+      }
+
+      if (addMessageForm) {
+        addMessageForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          document
+            .querySelectorAll(".new-message-validation-messages")
+            .forEach((el) => el.remove());
+
+          const newMessage = document.querySelector(".new-message");
+          const trimmedNewMessage = newMessage.value.trim();
+
+          if (trimmedNewMessage === "") {
+            const ul = document.createElement("ul");
+            ul.classList.add("new-message-validation-messages");
+
+            const li = document.createElement("li");
+            li.textContent = "Please enter some text.";
+
+            ul.appendChild(li);
+            addMessageForm.insertBefore(ul, newMessage);
+
+            return;
+          }
+
+          const response = await fetch("/feed/add-message", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ newMessage: trimmedNewMessage }),
+          });
+
+          const result = await response.json();
+          if (result.errors) {
+            const ul = document.createElement("ul");
+            ul.classList.add("new-message-validation-messages");
+
+            result.errors.forEach((error) => {
+              const li = document.createElement("li");
+              li.textContent = error.msg;
+              ul.appendChild(li);
+            });
+
+            addMessageForm.insertBefore(ul, newMessage);
+          } else {
+            addMessageForm.reset();
+            location.reload();
+          }
+        });
+      }
+
+      const deleteMessageForms = document.querySelectorAll(
+        ".delete-message-form"
+      );
+
+      if (deleteMessageForms) {
+        deleteMessageForms.forEach((deleteMessageForm) => {
+          deleteMessageForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const confirmDelete = confirm(
+              "Are you sure you want to delete this message?"
+            );
+            if (!confirmDelete) return;
+
+            const formAction = deleteMessageForm.getAttribute("action");
+            const response = await fetch(formAction, {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+            });
+
+            if (!response.ok) {
+              const result = await response.json();
+              alert(result.error || "Failed to delete message.");
+              return;
+            }
+
+            deleteMessageForm.closest(".message-card").remove();
+
+            const remainingMessages =
+              document.querySelectorAll(".message-card");
+
+            const messageCards = document.querySelectorAll(".message-card");
+            const messagesCount = document.querySelector(".messages-count");
+            if (messagesCount) {
+              const messageCountText =
+                messageCards.length <= 1
+                  ? `(${messageCards.length}) Message`
+                  : `(${messageCards.length}) Messages`;
+
+              messagesCount.innerText = messageCountText;
+            }
+
+            if (remainingMessages.length === 0) {
+              const messagesSection =
+                document.querySelector(".messages-section");
+
+              if (!document.querySelector(".no-message-notice")) {
+                const noMessageNotice = document.createElement("div");
+                noMessageNotice.classList.add("no-message-notice");
+                const noMessageNoticeText = document.createElement("p");
+                noMessageNoticeText.textContent =
+                  "No message found yet. Be the first to post!";
+
+                noMessageNotice.appendChild(noMessageNoticeText);
+                messagesSection.appendChild(noMessageNotice);
+              }
+            }
+          });
+        });
       }
     </script>
   </body>

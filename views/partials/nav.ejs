@@ -1,14 +1,16 @@
 <nav class="navbar">
   <ul class="nav-lists">
     <% if (user) { %>
-    <li><%= user.username %></li>
+    <li>Hi, <%= user.username %>!</li>
+
     <li>
       <form action="/logout" method="POST">
-        <button type="submit" class="btn-logout">Logout</button>
+        <button type="submit" class="btn-logout">Log Out</button>
       </form>
     </li>
+
     <% } else { %>
-    <li><a href="/login" class="btn-login">Login</a></li>
+    <li><a href="/login" class="btn-login">Log In</a></li>
     <li><a href="/register" class="btn-register">Register</a></li>
     <% } %>
   </ul>

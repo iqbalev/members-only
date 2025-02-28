@@ -1,36 +1,84 @@
 import { validationResult } from "express-validator";
-import { getMessages, createMessage } from "../database/dbQueries.js";
+import {
+  getMessagesCount,
+  getMessages,
+  createMessage,
+  updateUserMembership,
+  deleteMessage,
+} from "../database/dbQueries.js";
 import formatMessages from "../utils/formatMessages.js";
+import CustomError from "../utils/CustomError.js";
 
-export const renderFeedGet = async (req, res) => {
-  const userMembership = res.locals.user?.membership || "guest";
-  const messages = await getMessages();
-  const formattedMessages = formatMessages(messages, userMembership);
+export const renderFeedGet = async (req, res, next) => {
+  try {
+    const { user } = res.locals;
+    const userMembership = user?.membership || "guest";
+    const isAdmin = user?.is_admin || false;
+    const messagesCount = await getMessagesCount();
+    const messages = await getMessages();
+    const formattedMessages = formatMessages(messages, userMembership, isAdmin);
 
-  return res.render("feed", {
-    errors: [],
-    currentPage: "feed",
-    messages: formattedMessages,
-  });
-};
-
-export const addMessagePost = async (req, res) => {
-  const errors = validationResult(req);
-  const userMembership = res.locals.user?.membership || "guest";
-  const messages = await getMessages();
-  const formattedMessages = formatMessages(messages, userMembership);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).render("feed", {
-      errors: errors.array(),
+    return res.render("feed", {
       currentPage: "feed",
+      messagesCount: messagesCount,
       messages: formattedMessages,
     });
+  } catch (error) {
+    return next(error);
   }
+};
 
-  const { newMessage } = req.body;
-  const userId = res.locals.user?.id;
-  if (!userId) return res.status(401).send("Unauthorized.");
-  await createMessage(userId, newMessage);
-  return res.redirect("/feed");
+export const addMessagePost = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { user } = res.locals;
+    if (!user?.id) {
+      return next(new CustomError("Unauthorized Access", 401));
+    }
+
+    const { newMessage } = req.body;
+    await createMessage(user.id, newMessage);
+
+    return res.json({ success: true });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const upgradeToPremiumPost = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { user } = res.locals;
+    if (!user?.username) {
+      return next(new CustomError("Unauthorized Access", 401));
+    }
+
+    await updateUserMembership("premium", user.username);
+    return res.json({ success: true });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const deleteMessageDelete = async (req, res, next) => {
+  try {
+    const { messageId } = req.params;
+
+    const deletedMessage = await deleteMessage(messageId);
+    if (!deletedMessage) {
+      return next(new CustomError("Message Not Found", 404));
+    }
+
+    return res.json({ success: true });
+  } catch (error) {
+    return next(error);
+  }
 };
