@@ -3,7 +3,6 @@ import bcryptjs from "bcryptjs";
 import { validationResult } from "express-validator";
 import { createUser } from "../database/dbQueries.js";
 
-// Register Controllers
 export const registerGet = (req, res) => {
   res.render("auth", {
     errors: [],
@@ -41,7 +40,6 @@ export const registerPost = async (req, res, next) => {
   }
 };
 
-// Login Controllers
 export const loginGet = (req, res) => {
   res.render("auth", { errors: [], currentPage: "login", previousValue: {} });
 };
@@ -79,7 +77,6 @@ export const loginPost = async (req, res, next) => {
   })(req, res, next);
 };
 
-// Logout Controllers
 export const logoutPost = (req, res, next) => {
   req.logOut((err) => {
     if (err) {
