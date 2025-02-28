@@ -23,7 +23,7 @@
           method="POST"
           class="<%= currentPage %>-form"
         >
-          <%- include("partials/formErrors.ejs", { errors }) %>
+          <%- include("partials/authErrors.ejs", { errors }) %>
 
           <!-- prettier-ignore -->
           <% if (currentPage === "register") { %>
